@@ -149,21 +149,20 @@ portwine_start_debug () {
     echo 'lspci -k | grep -EA3 VGA|3D|Display :' >> "${PORT_WINE_PATH}/${portname}.log"
     echo "$(lspci -k | grep -EA3 'VGA|3D|Display')" >> "${PORT_WINE_PATH}/${portname}.log"
     echo "----" >> "${PORT_WINE_PATH}/${portname}.log"
-    [[ `command -v glxinfo` ]] && glxinfo -B >> "${PORT_WINE_PATH}/${portname}.log"
+    check_command glxinfo && glxinfo -B >> "${PORT_WINE_PATH}/${portname}.log"
     echo "-----" >> "${PORT_WINE_PATH}/${portname}.log"
     echo "inxi -G:" >> "${PORT_WINE_PATH}/${portname}.log"
     "${PW_WINELIB}/portable/bin/inxi" -Gc0 >> "${PORT_WINE_PATH}/${portname}.log"
     echo "----------------------------------------------" >> "${PORT_WINE_PATH}/${portname}.log"
     echo "Vulkan info device name:" >> "${PORT_WINE_PATH}/${portname}.log"
-    [[ `command -v vulkaninfo` ]] && vulkaninfo --summary 2>/dev/null | grep -E '^GPU|deviceName|driverName' >> "${PORT_WINE_PATH}/${portname}.log"
+    check_command vulkaninfo && vulkaninfo --summary 2>/dev/null | grep -E '^GPU|deviceName|driverName' >> "${PORT_WINE_PATH}/${portname}.log"
     "${PW_WINELIB}/portable/bin/vkcube" --c 50
     if [ $? -eq 0 ]; then
         echo "Vulkan cube test passed successfully" >> "${PORT_WINE_PATH}/${portname}.log"
     else
         echo "Vkcube test completed with error" >> "${PORT_WINE_PATH}/${portname}.log"
     fi
-    if [ ! -x "$(command -v gamemoderun 2>/dev/null)" ]
-    then
+    if check_command gamemoderun ; then
         echo "---------------------------------------------" >> "${PORT_WINE_PATH}/${portname}.log"
         echo "!!!gamemod not found!!!"  >> "${PORT_WINE_PATH}/${portname}.log"
     fi
@@ -699,7 +698,7 @@ else
     for PW_DESKTOP_FILES in ${PW_ALL_DF} ; do
         PW_NAME_D_ICON="$(cat "${PORT_WINE_PATH}/${PW_DESKTOP_FILES}" | grep Icon | awk -F= '{print $2}')"
         PW_NAME_D_ICON_48="${PW_NAME_D_ICON//".png"/"_48.png"}"
-        if [[ ! -f "${PW_NAME_D_ICON_48}" ]]  && [[ -f "${PW_NAME_D_ICON}" ]] && [[ -x "`command -v "convert" 2>/dev/null`" ]] ; then
+        if [[ ! -f "${PW_NAME_D_ICON_48}" ]]  && [[ -f "${PW_NAME_D_ICON}" ]] && check_command "convert" ; then
             convert "${PW_NAME_D_ICON}" -resize 48x48 "${PW_NAME_D_ICON_48}" 
         fi
         PW_GENERATE_BUTTONS+="--field=   ${PW_DESKTOP_FILES//".desktop"/""}!${PW_NAME_D_ICON_48}!:FBTN%@bash -c \"run_desktop_b_click "${PW_DESKTOP_FILES//" "/¬}"\"%"
@@ -791,7 +790,7 @@ else
     # --field="   Bethesda.net Launcher"!"$PW_GUI_ICON_PATH/bethesda.png"!"":"FBTN" '@bash -c "button_click PW_BETHESDA"'
     # --field="   ROBLOX"!"$PW_GUI_ICON_PATH/roblox.png"!"":"FBTN" '@bash -c "button_click PW_ROBLOX"'
 
-    if  [[ `command -v wmctrl` ]] &>/dev/null ; then
+    if  check_command wmctrl ; then
         sleep 2
         while [[ $(pgrep -a yad_v12_3 | head -n 1 | awk '{print $1}' 2>/dev/null) ]] ; do
             sleep 2

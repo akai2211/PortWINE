@@ -19,11 +19,13 @@ if [[ $(id -u) = 0 ]] ; then
     zenity --error --text "Do not run this script as root!"
     exit 1
 fi
-if [[ "${s_install}" != "1" && ! -x "`command -v "zenity" 2>/dev/null`" ]] ; then
-    echo "You will need to install: zenity, and restart the port."
-    xdg-open "https://linux-gaming.ru/portproton/" > /dev/null 2>&1 & exit 0
-fi
+
 . "$(dirname $(readlink -f "$0"))/functions_helper"
+
+if [[ "${s_install}" != "1" ]] && ! check_command "zenity" ; then
+    echo "You will need to install: zenity, and restart the port."
+    xdg-open "https://linux-gaming.ru/portproton/" &>/dev/null & exit 0
+fi
 
 start_portwine () {
     var_winedlloverride_update "${PW_MUST_WINEDLLOVERRIDES}"
@@ -201,7 +203,7 @@ start_portwine () {
         killall xneur
         export int_xneur=1
     fi
-    if [[ -x "`command -v "gamemoderun" 2>/dev/null`" ]] && [[ "$PW_USE_GAMEMODE" = "1" ]] ; then
+    if check_command "gamemoderun" && [[ "$PW_USE_GAMEMODE" = "1" ]] ; then
         export GAMEMODERUN=1
         PW_GAMEMODERUN_SLR="gamemoderun"
         # if [[ ! -z "${PW_LD_PRELOAD}" ]]

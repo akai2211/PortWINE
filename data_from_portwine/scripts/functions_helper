@@ -1,37 +1,27 @@
 #!/usr/bin/env bash
 # Author: Castro-Fidel (linux-gaming.ru)
 ########################################################################
-pw_ping_test () {
-    ping -w3 -c1 github.com &> /dev/null
-    [ "$?" == "0" ] && return 0 || return 1
-}
+pw_ping_test () { ping -w3 -c1 "8.8.8.8" &>/dev/null && return 0 || return 1 ;}
+export -f pw_ping_test
 
-print_error () {
-    printf "\E[31m%s Error: $@ %s\e[0m\n"
-}
-export -f print_error
+print_error () { printf "\E[31m%s Error: $@ %s\e[0m\n" ;}
+print_warning () { printf "\E[33m%s Warning: $@ %s\e[0m\n" ;}
+print_info () { printf "\E[36m%s Info: $@ %s\e[0m\n" ;}
+print_debug () { printf "\E[35m%s Debug: $@ %s\e[0m\n" ;}
+print_var () { for vp in $@ ; do print_info "${vp}=${!vp}" ; done ;}
+export -f print_error print_warning print_info print_debug print_var
 
-print_warning () {
-    printf "\E[33m%s Warning: $@ %s\e[0m\n"
-}
-export -f print_warning
-
-print_info () {
-    printf "\E[36m%s Info: $@ %s\e[0m\n"
-}
-export -f print_info
-
-print_debug () {
-    printf "\E[35m%s Debug: $@ %s\e[0m\n"
-}
-export -f print_debug
-
-print_var () {
-    for vp in $@ ; do print_info "${vp}=${!vp}" ; done
-}
-export -f print_var
 
 check_variables () { [[ -z ${!1} ]] && export $1="$2" ;}
+
+check_command () {
+    if command -v "$1" &>/dev/null
+    then return 0
+    else
+        print_error "command: $1 - not found"
+        return 1
+    fi
+}
 
 try_copy_file () {
     if [ ! -f "$1" ] ; then	print_info "file $1 not found for copy" && return 1
@@ -205,7 +195,7 @@ var_vk_istance_layers_config_update () {
 unpack_tar_zst () {
     set -o pipefail
     unset PW_ZSTD_PORT
-    if  [[ `command -v zstd` ]] &>/dev/null ; then
+    if check_command "zstd" ; then
         tar -I zstd -xhvf "$1" -C "$2" | sszen
         [ "${PIPESTATUS[0]}" != 0 ] && print_error "File $1 unpacking error." && return 1 || return 0
     else
@@ -667,12 +657,6 @@ pw_download_libs () {
     export pw_yad_v12_3="${PW_WINELIB}/portable/bin/yad_v12_3"
     export pw_zstd="${PW_WINELIB}/portable/bin/zstd"
     export pw_7z="${PW_WINELIB}/portable/lib/p7zip/7z"
-    if [ -x "`command -v xterm 2>/dev/null`" ]; then
-        export SYS_XTERM=`command -v xterm`
-        export PW_XTERM="${SYS_XTERM} -geometry 159x37 -e"
-    else
-        export PW_XTERM="${PW_WINELIB}/runtime/files/bin/xterm -geometry 159x37 -e"
-    fi
     return 0
 }
 
@@ -1049,7 +1033,7 @@ pw_create_gui_png () {
     try_remove_file "${PORT_WINE_PATH}/data/img/Setup.png"
     try_remove_file "${PORT_WINE_PATH}/data/img/launcher.png"
     try_remove_file "${PORT_WINE_PATH}/data/img/Launcher.png"
-    if [[ -x "`command -v wrestool 2>/dev/null`" ]] && [[ ! -f "${PORT_WINE_PATH}/data/img/${PORTPROTON_NAME}.png" ]] ; then
+    if check_command "wrestool" && [[ ! -f "${PORT_WINE_PATH}/data/img/${PORTPROTON_NAME}.png" ]] ; then
         try_remove_dir "${PORT_WINE_TMP_PATH}/tmp_img"
         create_new_dir "${PORT_WINE_TMP_PATH}/tmp_img"
         wrestool -x --output="${PORT_WINE_TMP_PATH}/tmp_img/" -t14 "${portwine_exe}"
@@ -1064,7 +1048,7 @@ pw_create_gui_png () {
         cp -f "${PORT_WINE_TMP_PATH}/tmp_img/${PORTPROTON_NAME}.png" "${PORT_WINE_PATH}/data/img/${PORTPROTON_NAME}.png"
     fi
     if [[ -z "`file "${PORT_WINE_PATH}/data/img/${PORTPROTON_NAME}.png" | grep "${PW_RESIZE_TO} x ${PW_RESIZE_TO}"`" ]] && \
-       [[ -x "`command -v "convert" 2>/dev/null`" ]] && [[ -f "${PORT_WINE_PATH}/data/img/${PORTPROTON_NAME}.png" ]] ; then
+        check_command "convert"  && [[ -f "${PORT_WINE_PATH}/data/img/${PORTPROTON_NAME}.png" ]] ; then
         convert "${PORT_WINE_PATH}/data/img/${PORTPROTON_NAME}.png" -resize ${PW_RESIZE_TO}x${PW_RESIZE_TO} "${PORT_WINE_PATH}/data/img/${PORTPROTON_NAME}.png" 
     fi
     if [[ -z "${PW_ICON_FOR_YAD}" ]] ; then
