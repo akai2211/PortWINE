@@ -190,14 +190,6 @@ start_portwine () {
         export DXVK_ENABLE_NVAPI=1
     fi
 
-    case "$PW_FORCE_USE_VSYNC" in  # 0-FORCE_OFF, 1-FORCE_ON, 2-BY_DEFAULT
-        "0")
-            unset vblank_mode
-            unset __GL_SYNC_TO_VBLANK ;;
-        "1")
-            export vblank_mode=1
-            export __GL_SYNC_TO_VBLANK=1 ;;
-    esac
     export int_xneur=0
     if [[ ! -z "`pgrep xneur`" ]]; then
         killall xneur
@@ -206,10 +198,6 @@ start_portwine () {
     if check_command "gamemoderun" && [[ "$PW_USE_GAMEMODE" = "1" ]] ; then
         export GAMEMODERUN=1
         PW_GAMEMODERUN_SLR="gamemoderun"
-        # if [[ ! -z "${PW_LD_PRELOAD}" ]]
-        # then export PW_LD_PRELOAD="${PW_LD_PRELOAD}:${MANGOHUD_LIB_NAME}"
-        # else export PW_LD_PRELOAD="${MANGOHUD_LIB_NAME}"
-        # fi
         systemctl enable --now --user gamemoded &>/dev/null
         print_info "Gamemod will be launched."
     else
@@ -563,7 +551,7 @@ start_portwine () {
             echo "START WINETRICKS..." >> "${PORT_WINE_TMP_PATH}/update_pfx_log"
             echo "Try to install DLL in prefix: ${PW_DLL_NEED_INSTALL}" >> "${PORT_WINE_TMP_PATH}/update_pfx_log"
             print_info "Try to install DLL in prefix: ${PW_DLL_NEED_INSTALL}"
-            ${pw_runtime} env PATH="${PATH}" LD_LIBRARY_PATH="${PW_LD_LIBRARY_PATH}" \
+            ${pw_runtime} env WINEDLLOVERRIDES="winegstreamer=" PATH="${PATH}" LD_LIBRARY_PATH="${PW_LD_LIBRARY_PATH}" \
             "${PORT_WINE_TMP_PATH}/winetricks" -q -r -f ${PW_DLL_NEED_INSTALL} &>>"${PORT_WINE_TMP_PATH}/update_pfx_log"
             wait_wineserver
             kill_portwine
@@ -574,19 +562,14 @@ start_portwine () {
         if [[ ! -z "${PW_WINDOWS_VER}" && `echo "$PW_WINDOWS_VER" | sed 's/.*/\L&/'` == "xp" ]] ; then
             export PW_WINDOWS_VER="xp64"
         fi
-        ${pw_runtime} env PATH="${PATH}" LD_LIBRARY_PATH="${PW_LD_LIBRARY_PATH}" \
+        ${pw_runtime} env WINEDLLOVERRIDES="winegstreamer=" PATH="${PATH}" LD_LIBRARY_PATH="${PW_LD_LIBRARY_PATH}" \
         "${WINELOADER}" winecfg -v `echo "win${PW_WINDOWS_VER}" | sed 's/.*/\L&/'`
         wait_wineserver
         kill_portwine
         echo "Set to win${PW_WINDOWS_VER}"
     fi
 
-    if [[ "${portwine_exe}" == *-Shipping.exe ]] ; then 
-        echo "Disable EAC"
-        [[ -z "${LAUNCH_PARAMETERS}" ]] && export LAUNCH_PARAMETERS+=" -eac-nop-loaded "
-    fi
-
-    sleep 1
+    sleep 0.3
     pw_stop_progress_bar &&
     pw_tray_icon &&
 

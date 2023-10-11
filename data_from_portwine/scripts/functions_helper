@@ -355,11 +355,6 @@ init_wine_ver () {
     if [[ -d "${WINEDIR}" ]] ; then
         [[ ! -f "${WINEDIR}/version" ]] && echo "${PW_WINE_USE}" > "${WINEDIR}/version"
 
-        # if [[ -d "${WINEDIR}/lib32/" ]] ; then
-        #     mv -f "${WINEDIR}/lib" "${WINEDIR}/lib64"
-        #     mv -f "${WINEDIR}/lib32" "${WINEDIR}/lib"
-        # fi
-
         if [[ ! -d "${WINEDIR}/lib64/" && -d "${WINEDIR}/lib/wine/x86_64-unix" ]] ; then
             create_new_dir "${WINEDIR}/lib64/wine"
             mv -f "${WINEDIR}/lib/wine/x86_64-unix" "${WINEDIR}/lib64/wine/"
@@ -409,10 +404,8 @@ pw_init_runtime () {
     PW_PV_OVERRIDES="/usr/lib/pressure-vessel/overrides/lib" 
     export PW_LD_LIBRARY_PATH="${WINEDIR}/lib64:${WINEDIR}/lib:${PW_WINELIB}/portable/lib/lib64:${PW_WINELIB}/portable/lib/lib32:${PW_PV_OVERRIDES}/x86_64-linux-gnu/aliases:${PW_PV_OVERRIDES}/i386-linux-gnu/aliases"
 
-    if [ ! -z ${PATH_TMP} ]
-    then export PATH="${PATH_TMP}"
-    else export PATH_TMP="${PATH}"
-    fi
+    [ ! -z "${PATH_TMP}" ] && export PATH="${PATH_TMP}" || export PATH_TMP="${PATH}"
+    
     if [ ! -z "${PATH}" ]
     then export PATH="${WINEDIR}/bin:${PATH}:${PW_WINELIB}/portable/bin"
     else export PATH="${WINEDIR}/bin:${PW_WINELIB}/portable/bin"
@@ -613,7 +606,7 @@ stop_portwine () {
     if [ ! -z "`pgrep -a yad_v12_3 | grep "\--notification" | awk '{print $1}'`" ] ; then
         kill -s SIGUSR1 "`pgrep -a yad_v12_3 | grep "\--notification" | awk '{print $1}'`" 2>/dev/null
     fi
-    add_in_stop_portwine #&>/dev/null
+    add_in_stop_portwine
     kill -n 9 `pgrep -a start.sh | grep -i '/PortProton/' | awk '{print $1}'` > /dev/null 2>&1
     killall yad_v12_3 &>/dev/null
     exit 0

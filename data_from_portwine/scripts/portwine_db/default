@@ -21,7 +21,6 @@
 ##export PW_VULKAN_NO_ASYNC=1                     # Disabled ASYNC for VULKAN
 ##export PW_OLD_GL_STRING=1
 ##export PW_HIDE_NVIDIA_GPU=1
-##export PW_FORCE_USE_VSYNC=0                     # Vsync: 0-FORCE_OFF, 1-FORCE_ON, 2-BY_DEFAULT
 ##export PW_VIRTUAL_DESKTOP=1
 ##export VKD3D_CONFIG=force_bindless_texel_buffer,multi_queue
 
@@ -40,7 +39,6 @@
 ##export WINEARCH=win32                           # defaut = win64
 ##export WINEPREFIX=
 
-##export PW_WINEDBG_DISABLE=1                     # Disabled WINEDBG
 ##export PW_USE_TERMINAL=1                        # Force run in terminal
 ##export PW_GUI_DISABLED_CS=1                     # 1 = disabled GUI
 

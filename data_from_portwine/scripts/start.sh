@@ -86,7 +86,6 @@ portwine_launch () {
 portwine_start_debug () {
     kill_portwine
     export PW_LOG=1
-    export PW_WINEDBG_DISABLE=0
     echo "${port_deb1}" > "${PORT_WINE_PATH}/${portname}.log"
     echo "${port_deb2}" >> "${PORT_WINE_PATH}/${portname}.log"
     echo "-------------------------------------------------------------" >> "${PORT_WINE_PATH}/${portname}.log"
@@ -437,7 +436,7 @@ pw_edit_db () {
         /usr/bin/env bash -c ${pw_full_command_line[*]} &
         exit 0
     fi
-    # PW_FORCE_USE_VSYNC PW_WINEDBG_DISABLE PW_USE_AMDVLK_DRIVER HEAP_DELAY_FREE
+    # PW_USE_AMDVLK_DRIVER HEAP_DELAY_FREE
 }
 
 pw_autoinstall_from_db () {
@@ -446,7 +445,6 @@ pw_autoinstall_from_db () {
     export PW_USE_GAMEMODE=0
     export PW_CHECK_AUTOINSTAL=1
     export PW_GUI_DISABLED_CS=1
-    export PW_WINEDBG_DISABLE=1
     export PW_NO_WRITE_WATCH=0
     export PW_VULKAN_USE=1
     export PW_USE_EAC_AND_BE=0
@@ -729,15 +727,15 @@ else
     --field="   CLEAR PREFIX"!"$PW_GUI_ICON_PATH/separator.png"!"":"FBTN" '@bash -c "button_click gui_clear_pfx"' \
     --field="   DOWNLOAD OTHER WINE"!"$PW_GUI_ICON_PATH/separator.png"!"${loc_download_other_wine}":"FBTN" '@bash -c "button_click gui_proton_downloader"' \
     --field="   WINE UNINSTALLER"!"$PW_GUI_ICON_PATH/separator.png"!"":"FBTN" '@bash -c "button_click gui_wine_uninstaller"' \
-    --field='   WINECFG'!"$PW_GUI_ICON_PATH/separator.png"!"${loc_winecfg}":"FBTN" '@bash -c "button_click WINECFG"' \
+    --field='   WINECFG         '!"$PW_GUI_ICON_PATH/separator.png"!"${loc_winecfg}":"FBTN" '@bash -c "button_click WINECFG"' \
     --field='   WINEFILE'!"$PW_GUI_ICON_PATH/separator.png"!"${loc_winefile}":"FBTN" '@bash -c "button_click WINEFILE"' \
     --field='   WINECMD'!"$PW_GUI_ICON_PATH/separator.png"!"${loc_winecmd}":"FBTN" '@bash -c "button_click WINECMD"' \
     --field='   WINEREG'!"$PW_GUI_ICON_PATH/separator.png"!"${loc_winereg}":"FBTN" '@bash -c "button_click WINEREG"' 2>/dev/null 1> "${PORT_WINE_TMP_PATH}/tmp_yad_form_vulkan" &
 
     "${pw_yad_v12_3}" --plug=$KEY --tabnum=${PW_GUI_SORT_TABS[1]} --form --columns=3 --align-buttons --keep-icon-size --scroll  \
-    --field="   Dolphin 5.0"!"$PW_GUI_ICON_PATH/dolphin.png"!"":"FBTN" '@bash -c "button_click PW_DOLPHIN"' \
-    --field="   MAME"!"$PW_GUI_ICON_PATH/mame.png"!"":"FBTN" '@bash -c "button_click PW_MAME"' \
-    --field="   ScummVM"!"$PW_GUI_ICON_PATH/scummvm.png"!"":"FBTN" '@bash -c "button_click PW_SCUMMVM"' \
+    --field="   Dolphin 5.0     "!"$PW_GUI_ICON_PATH/dolphin.png"!"":"FBTN" '@bash -c "button_click PW_DOLPHIN"' \
+    --field="   MAME            "!"$PW_GUI_ICON_PATH/mame.png"!"":"FBTN" '@bash -c "button_click PW_MAME"' \
+    --field="   ScummVM         "!"$PW_GUI_ICON_PATH/scummvm.png"!"":"FBTN" '@bash -c "button_click PW_SCUMMVM"' \
     --field="   RetroArch"!"$PW_GUI_ICON_PATH/retroarch.png"!"":"FBTN" '@bash -c "button_click PW_RETROARCH"' \
     --field="   PPSSPP Windows"!"$PW_GUI_ICON_PATH/ppsspp.png"!"":"FBTN" '@bash -c "button_click PW_PPSSPP"' \
     --field="   Citra"!"$PW_GUI_ICON_PATH/citra.png"!"":"FBTN" '@bash -c "button_click PW_CITRA"' \

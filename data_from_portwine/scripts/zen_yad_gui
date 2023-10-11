@@ -37,7 +37,7 @@ pw_start_progress_bar_cover () {
     PW_GIF_SIZE_X=`file "${PW_GIF_FILE}" | awk '{print $7 + 20}'`
     PW_GIF_SIZE_Y=`file "${PW_GIF_FILE}" | awk '{print $9 + 20}'`
     "${pw_yad}" --picture --filename="${PW_GIF_FILE}" --close-on-unfocus --no-buttons --undecorated --center \
-    --skip-taskbar --width=$PW_GIF_SIZE_X --height=$PW_GIF_SIZE_Y > /dev/null 2>&1 &
+    --skip-taskbar --width=$PW_GIF_SIZE_X --height=$PW_GIF_SIZE_Y 2>/dev/null  &
     export PW_YAD_PID_PROGRESS_BAR_COVER="$!"
     return 0
 }
@@ -528,8 +528,7 @@ portwine_create_shortcut () {
             fi
         fi
 
-
-        [[ "$1" != silent ]] && xdg-open "${PORT_WINE_PATH}" 2>1 >/dev/null &
+        [[ "$1" != silent ]] && xdg-open "${PORT_WINE_PATH}" &>/dev/null &
     fi
 }
 
